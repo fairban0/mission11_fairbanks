@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Book } from '../types/bookService';
 import { useNavigate } from 'react-router-dom';
 
+// Components to display a list of books with pagination and filtering
 function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [books, setBooks] = useState<Book[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
@@ -10,18 +11,23 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [totalPages, setTotalPages] = useState<number>(0);
   const navigate = useNavigate();
 
+  // Fetch books from API whenever filters or pagination changes
   useEffect(() => {
     const fetchProjects = async () => {
       const categoryParams = selectedCategories
-        .map((cat) => `bookTypes=${encodeURIComponent(cat)}`)
+        .map((cat) => `category=${encodeURIComponent(cat)}`)
         .join('&');
 
+        // Fetch books from backend API
       const response = await fetch(
         `https://localhost:5000/Book/AllBooks?pageSize=${pageSize}&pageNum=${pageNum}${selectedCategories.length ? `&${categoryParams}` : ''}`
       );
       const data = await response.json();
+      // Update state with book data
       setBooks(data.books);
       setTotalItems(data.totalNumBooks);
+
+      // Calculate total number of pages
       setTotalPages(Math.ceil(totalItems / pageSize));
     };
 
@@ -30,6 +36,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
 
   return (
     <>
+      {/* Render each book as a card */}
       {books.map((b) => (
         <div
           key={b.bookID}
@@ -49,7 +56,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
           <button
               className="btn btn-success"
               onClick={() =>
-                navigate(`/cart/${b.title}/${b.bookID}`)
+                navigate(`/book/${b.bookID}`)
               }
             >
               Add to Cart
@@ -57,6 +64,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
           </div>
       ))}
 
+      {/* Paginatoin Controls */}
       <button disabled={pageNum === 1} onClick={() => setPageNum(pageNum - 1)}>
         Previous
       </button>
@@ -78,6 +86,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
         Next
       </button>
 
+       {/* Dropdown to choose number of results per page */}
       <br />
       <label>
         Results per page:
