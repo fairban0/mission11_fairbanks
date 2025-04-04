@@ -7,7 +7,8 @@ interface FetchBooksResponse {
 }
 
 // Base API URL
-const API_URL = ''; // GET API URL WHEN I DEPLOY
+const API_URL =
+  'https://localhost:5000/Book'; // <-- add /Book
 
 /* Fetched a paginated and filtered list of books from the API */
 export const fetchBooks =
@@ -49,7 +50,7 @@ export const fetchBooks =
     }
   };
 
-  /* Sends a post request to add a new book to the database */
+/* Sends a post request to add a new book to the database */
 export const addBook = async (
   newBook: Book
 ): Promise<Book> => {
