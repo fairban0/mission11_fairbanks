@@ -8,7 +8,7 @@ interface FetchBooksResponse {
 
 // Base API URL
 const API_URL =
-  'https://mission13-fairbanks-backend-hrbpd5f3bbgzgsg5.eastus-01.azurewebsites.net/Book'; // <-- add /Book
+  'https://mission11-fairbanks-backend-bvgxasa6bfb0hwd2.eastus-01.azurewebsites.net/book'; // <-- add /Book
 
 /* Fetched a paginated and filtered list of books from the API */
 export const fetchBooks =
