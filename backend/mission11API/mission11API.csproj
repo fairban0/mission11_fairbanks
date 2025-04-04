@@ -17,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Bookstore.sqlite">
+    <Content Include Update="Bookstore.sqlite">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
 </Project>
