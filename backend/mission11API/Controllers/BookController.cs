@@ -4,59 +4,74 @@ using mission11API.Data;
 
 namespace mission11API.Controllers
 {
-    // This controller handles HTTP requests related to books.
+    // This controller handles book-related API requests
     [Route("[controller]")]
     [ApiController]
     public class BookController : ControllerBase
     {
         private BookDbContext _bookContext;
 
-        // Constructor injecting the BookDbContext dependency
+        // Constructor injects the database context
         public BookController(BookDbContext temp) => _bookContext = temp;
 
-        // GET: /Book/AllBooks
-        // Returns all books in the database
+        // GET: /Book/AllBooks?pageSize=10&pageNum=1&Category=Fiction
+        // Returns a paginated list of books, optionally filtered by category
         [HttpGet("AllBooks")]
-        public IEnumerable<Book> GetBooks()
-        {
-            // Fetch all books from the database
-            var something = _bookContext.Books.ToList();
-
-            return something;
-        }
-
-        // GET: /Book/BooksPaged
-        // Returns a paginated and optionally sorted list of books
-        [HttpGet("BooksPaged")]
-        public IActionResult GetBooksPaged(int page = 1, int pageSize = 5, string sortBy = "Title", bool ascending = true)
+        public IActionResult GetBooks(int pageSize = 10, int pageNum = 1, [FromQuery] List<string>? Category = null)
         {
             // Start with a queryable version of the Books table
             var query = _bookContext.Books.AsQueryable();
 
-            // Apply sorting based on the 'sortBy' field and direction (ascending or descending)
-            query = sortBy.ToLower() switch
+            // Filter by selected categories if provided
+            if (Category != null && Category.Any())
             {
-                "title" => ascending ? query.OrderBy(b => b.Title) : query.OrderByDescending(b => b.Title),
-                "author" => ascending ? query.OrderBy(b => b.Author) : query.OrderByDescending(b => b.Author),
-                "price" => ascending ? query.OrderBy(b => b.Price) : query.OrderByDescending(b => b.Price),
-                _ => query.OrderBy(b => b.Title) // Default sort by Title
-            };
+                query = query.Where(b => Category.Contains(b.Category));
+            }
 
-            // Get the total number of items before pagination
-            var totalItems = query.Count();
+            var totalNumBooks = query.Count(); // Count total number of matching books
 
-            // Apply pagination logic: skip items from previous pages, take items for current page
-            var books = query
-                .Skip((page - 1) * pageSize)
+            // Get only the books for the current page
+            var something = query
+                .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            // Return the paginated result along with the total item count
-            return Ok(new
+            // Return books along with the total count
+            var someObject = new
             {
-                totalItems,
-                books
-            });
+                Books = something,
+                TotalNumBooks = totalNumBooks
+            };
+
+            return Ok(someObject);
+        }
+
+        // GET: /Book/GetBookCategories
+        // Returns a list of all distinct book categories
+        [HttpGet("GetBookCategories")]
+        public IActionResult GetBookCategories()
+        {
+            var Category = _bookContext.Books
+                .Select(b => b.Category)
+                .Distinct()
+                .ToList();
+
+            return Ok(Category);
+        }
+
+        // GET: /Book/{id}
+        // Returns a specific book by its ID
+        [HttpGet("{id}")]
+        public IActionResult GetBookById(int id)
+        {
+            var book = _bookContext.Books.FirstOrDefault(b => b.BookID == id);
+
+            if (book == null)
+            {
+                return NotFound(); // Return 404 if book not found
+            }
+
+            return Ok(book); // Return the book details
         }
     }
 }
