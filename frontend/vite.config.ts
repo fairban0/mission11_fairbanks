@@ -7,5 +7,10 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  build: {
+    outDir: 'dist', // where Vite will output the built site
+  },
+  base: './', // ensures paths work when deployed, especially on Azure
 });
+
 
