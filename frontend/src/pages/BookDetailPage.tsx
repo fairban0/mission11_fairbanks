@@ -17,7 +17,7 @@ function BookDetailPage() {
   // Fetch the book from the API when the component loads
   useEffect(() => {
     const fetchBook = async () => {
-      const res = await fetch(`https://localhost:5000/Book/${bookId}`);
+      const res = await fetch(`https://mission11-fairbanks-backend-bvgxasa6bfb0hwd2.eastus-01.azurewebsites.net/book/${bookId}`);
       if (res.ok) {
         const data = await res.json();
         setBook(data); // Store book info in state
